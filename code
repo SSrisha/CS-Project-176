@@ -1,1 +1,29 @@
+import csv
 
+def load_csv(filepath):
+    with open(filepath, 'r') as f:
+        reader = csv.reader(f)
+        data = [row for row in reader]
+    return data
+
+dummy_data = load_csv("/mnt/data/extracted_data/dummy_data.csv")
+marketing_sales = load_csv("/mnt/data/extracted_data/marketing_sales_data.csv")
+test = load_csv("/mnt/data/extracted_data/test.csv")
+train = load_csv("/mnt/data/extracted_data/train.csv")
+val = load_csv("/mnt/data/extracted_data/val.csv")
+
+def remove_duplicates(data):
+    return[list(row) for row in set(tuple(row)) for row in data]
+
+dummy_data = remove_duplicates(dummy_data)
+marketing_sales = remove_duplicates(marketing_sales)
+test = remove_duplicates(test)
+train = remove_duplicates(train)
+val = remove_duplicates(val)
+
+def remove_missing(data):
+    return[row for row in data if all(row)]
+
+test = remove_missing(test)
+train = remove_missing(train)
+val = remove_missing(val)
