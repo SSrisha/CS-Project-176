@@ -28,3 +28,33 @@ def remove_missing(data):
 test = remove_missing(test)
 train = remove_missing(train)
 val = remove_missing(val)
+
+
+Social Media Usage and Emotional Well-Being: 
+
+clean_data = data.dropna(how='all')
+
+stacked_data = clean_data.set_index('User_ID').stack().reset_index
+stacked_data.columns = ['User_ID', 'Values', 'Details']
+
+stacked_data.head()
+
+Average Time Spent By A User On Social Media: 
+
+pivoted_data = data_new.pivot_table(
+    index = 'platform', 
+    values = 'time_spent',
+    aggfunc = 'mean'
+).reset_index()
+
+pivoted_data.head()
+
+Marketing Promotion TV vs Radio vs Social Media: 
+
+pivoted_data = marketing_data.pivot_table(
+    index = 'TV',
+    values = 'Sales',
+    aggfunc='mean'
+).reset_index()
+
+pivoted_data.head()
