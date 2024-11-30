@@ -2,6 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import csv
 
+### cleaning
 def load_data(filepath):
     if filepath.endswith(".csv"):
         return pd.read_csv(filepath)
@@ -34,31 +35,37 @@ test = clean_data(test)
 train = clean_data(train)
 val = clean_data(val)
 
+##filtering
 def filter_data(df, column, condition):
     return df[df[column] == condition]
 
 filtered_test = filter_data(test, "platform", "Instagram")
 
+### sorting 
 def sort_data(df, column, ascending = True):
     return df.sort_values(by=column, ascending=ascending)
 
 sorted_marketing = sort_data(marketing_sales, "Sales", ascending = False)
 
+### merging
 def merge_data(df1,df2, on_column, how="inner"):
     return pd.merge(df1, df2, on=on_column, how=how)
 
 merged_data = merge_data(dummy_data, test, on_column="User_ID", how="inner")
 
+###pivoting
 def pivot_data(df, index_col, value_col, aggfunc = "mean"):
     return df.pivot_table(index=index_col, values=value_col, aggfunc=aggfunc)
 
 pivoted_sales = pivot_data(marketing_sales, "platform", "Sales")
 
+### stacking
 def stack_data(df):
     return df.set_index("User_ID").stack().reset_index()
 
 stacked_test = stack_data(test)
 
+### visualizations
 def visualize_data(data):
     #Scatter plot
     plt.figure(figsize=(8,6))
