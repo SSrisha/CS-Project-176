@@ -34,6 +34,73 @@ Social Media Usage and Emotional Well-Being:
 
 clean_data = data.dropna(how='all')
 
+"""Anvitha's work"""
+#Data Set 1: (Dummy)
+#import pandas
+#import pandas as pd
+#df = pd.read_csv('dummy_data(in).csv')
+#display first few rows
+#print(df.head())
+#first two filters for user age
+#1st filter: young users 
+youngUsers = dummy_data[(dummy_data['age'] >= 18) & (dummy_data['age'] <= 30) & dummy_data['platform'].isin(['Instagram', 'TikTok'])]
+print(youngUsers)
+#2nd filter: older users 
+olderUsers = dummy_data[(dummy_data['age'] >= 50) & dummy_data['platform'].isin(['Facebook', 'LinkedIn'])]
+print(olderUsers)
+#sorting time spent on social media by young/order users in descending order
+youngUsersSorted = youngUsers.sort_values(by='time_spent', ascending=False)
+print(youngUsersSorted)
+# Sort older users by time spent
+olderUsersSorted = olderUsers.sort_values(by='time_spent', ascending=False)
+print(olderUsersSorted)
+#checking time spent based on profession
+timeSpentProfession = dummy_data.groupby('profession')['time_spent'].mean().sort_values(ascending=False)
+print(timeSpentProfession)
+
+#Data Set 2: (marketing)
+#import pandas
+#import pandas as pd
+#df = pd.read_csv('marketing_sales_datas(in).csv')
+#display first few rows
+#print(df.head())
+#filtering data relevant to social media 
+#filtering social media budget (low & high)
+#low
+lowSocialMediaBudget = marketing_sales[marketing_sales['Social Media'] <5]
+print(lowSocialMediaBudget)
+#high
+highSocialMediaBudget = marketing_sales[marketing_sales['Social Media'] >=5]
+print(highSocialMediaBudget)
+#filtering mega influencers
+megaInfluencers = marketing_sales[marketing_sales['Influencer'] == 'Mega']
+print(megaInfluencers)
+#filtering micro influencers
+microInfluencers = marketing_sales[marketing_sales['Influencer'] == 'Micro'] 
+print(microInfluencers)
+#sorting the data based on sales & social media promotional budget
+socialMediaSales = marketing_sales.sort_values(by=['sales', 'Social Media'], ascending=[False, False])
+print(socialMediaSales)
+
+#Data Set 3: (Train)
+#import pandas as pd
+#data = pd.read_csv('train_social_media(in).csv')
+# Age group bins & labels
+bins = [0, 18, 25, 35, 50, 65, 100]
+labels = ['Under 18', '18-24', '25-34', '35-49', '50-64', '65+']
+train['Age Group'] = pd.cut(train['Age'], bins=bins, labels=labels, right=False)
+
+# Filter data to focus on platforms and emotional well-being
+emotionalWellbeingData = train[['Platform', 'Age_Group', 'Dominant_Emotion']]
+
+# Count occurrences of each emotion by platform & age group
+emotion_summary = (emotionalWellbeingData.groupby(['Platform', 'Age_Group', 'Dominant_Emotion']).size().reset_index(name='Count').sort_values(by=['Platform', 'Age_Group', 'Count'], ascending=[True, True, False]))
+
+#First few rows of the updated 
+print(emotion_summary.head())
+
+
+"""srisha's work"""
 stacked_data = clean_data.set_index('User_ID').stack().reset_index
 stacked_data.columns = ['User_ID', 'Values', 'Details']
 
