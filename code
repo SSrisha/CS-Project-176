@@ -1,127 +1,127 @@
 import pandas as pd
+import matplotlib.pyplot as plt
 import csv
 
-def load_csv(filepath):
-    with open(filepath, 'r') as f:
-        reader = csv.reader(f)
-        data = [row for row in reader]
-    return data
+def load_data(filepath):
+    if filepath.endswith(".csv"):
+        return pd.read_csv(filepath)
+    elif filepath.endswith(".xlsx"):
+        return pd.read_excel(filepath)
+    else:
+        print("Error: Unsupported file format")
+        return None
 
-dummy_data = load_csv("/mnt/data/extracted_data/dummy_data.csv")
-marketing_sales = load_csv("/mnt/data/extracted_data/marketing_sales_data.csv")
-test = load_csv("/mnt/data/extracted_data/test.csv")
-train = load_csv("/mnt/data/extracted_data/train.csv")
-val = load_csv("/mnt/data/extracted_data/val.csv")
+dummy_data_fp = "/mnt/data/dummy_data.xlsx"
+marketing_sales_fp = "/mnt/data/marketing_sales_datas.xlsx"
+test_fp = "/mnt/data/test_social_media.csv"
+train_fp = "/mnt/data/train_social_media.xlsx"
+val_fp = "/mnt/data/val_social_media - Copy (1).xlsx"
 
-def remove_duplicates(data):
-    return[list(row) for row in set(tuple(row)) for row in data]
+dummy_data = load_data(dummy_data_fp)
+marketing_sales = load_data(marketing_sales_fp)
+test = load_data(test_fp)
+train = load_data(train_fp)
+val = load_data(val_fp)
 
-dummy_data = remove_duplicates(dummy_data)
-marketing_sales = remove_duplicates(marketing_sales)
-test = remove_duplicates(test)
-train = remove_duplicates(train)
-val = remove_duplicates(val)
+def clean_data(df):
+    df = df.drop_duplicates()
+    df = df.fillna(method = 'ffill').fillna(method = "bfill")
+    return df
 
-def remove_missing(data):
-    return[row for row in data if all(row)]
+dummy_data = clean_data(dummy_data)
+marketing_sales = clean_data(marketing_sales)
+test = clean_data(test)
+train = clean_data(train)
+val = clean_data(val)
 
-test = remove_missing(test)
-train = remove_missing(train)
-val = remove_missing(val)
+def filter_data(df, column, condition):
+    return df[df[column] == condition]
 
+filtered_test = filter_data(test, "platform", "Instagram")
 
-Social Media Usage and Emotional Well-Being: 
+def sort_data(df, column, ascending = True):
+    return df.sort_values(by=column, ascending=ascending)
 
-clean_data = data.dropna(how='all')
+sorted_marketing = sort_data(marketing_sales, "Sales", ascending = False)
 
-"""Anvitha's work"""
-#Data Set 1: (Dummy)
-#import pandas
-#import pandas as pd
-#df = pd.read_csv('dummy_data(in).csv')
-#display first few rows
-#print(df.head())
-#first two filters for user age
-#1st filter: young users 
-youngUsers = dummy_data[(dummy_data['age'] >= 18) & (dummy_data['age'] <= 30) & dummy_data['platform'].isin(['Instagram', 'TikTok'])]
-print(youngUsers)
-#2nd filter: older users 
-olderUsers = dummy_data[(dummy_data['age'] >= 50) & dummy_data['platform'].isin(['Facebook', 'LinkedIn'])]
-print(olderUsers)
-#sorting time spent on social media by young/order users in descending order
-youngUsersSorted = youngUsers.sort_values(by='time_spent', ascending=False)
-print(youngUsersSorted)
-# Sort older users by time spent
-olderUsersSorted = olderUsers.sort_values(by='time_spent', ascending=False)
-print(olderUsersSorted)
-#checking time spent based on profession
-timeSpentProfession = dummy_data.groupby('profession')['time_spent'].mean().sort_values(ascending=False)
-print(timeSpentProfession)
+def merge_data(df1,df2, on_column, how="inner"):
+    return pd.merge(df1, df2, on=on_column, how=how)
 
-#Data Set 2: (marketing)
-#import pandas
-#import pandas as pd
-#df = pd.read_csv('marketing_sales_datas(in).csv')
-#display first few rows
-#print(df.head())
-#filtering data relevant to social media 
-#filtering social media budget (low & high)
-#low
-lowSocialMediaBudget = marketing_sales[marketing_sales['Social Media'] <5]
-print(lowSocialMediaBudget)
-#high
-highSocialMediaBudget = marketing_sales[marketing_sales['Social Media'] >=5]
-print(highSocialMediaBudget)
-#filtering mega influencers
-megaInfluencers = marketing_sales[marketing_sales['Influencer'] == 'Mega']
-print(megaInfluencers)
-#filtering micro influencers
-microInfluencers = marketing_sales[marketing_sales['Influencer'] == 'Micro'] 
-print(microInfluencers)
-#sorting the data based on sales & social media promotional budget
-socialMediaSales = marketing_sales.sort_values(by=['sales', 'Social Media'], ascending=[False, False])
-print(socialMediaSales)
+merged_data = merge_data(dummy_data, test, on_column="User_ID", how="inner")
 
-#Data Set 3: (Train)
-#import pandas as pd
-#data = pd.read_csv('train_social_media(in).csv')
-# Age group bins & labels
-bins = [0, 18, 25, 35, 50, 65, 100]
-labels = ['Under 18', '18-24', '25-34', '35-49', '50-64', '65+']
-train['Age Group'] = pd.cut(train['Age'], bins=bins, labels=labels, right=False)
+def pivot_data(df, index_col, value_col, aggfunc = "mean"):
+    return df.pivot_table(index=index_col, values=value_col, aggfunc=aggfunc)
 
-# Filter data to focus on platforms and emotional well-being
-emotionalWellbeingData = train[['Platform', 'Age_Group', 'Dominant_Emotion']]
+pivoted_sales = pivot_data(marketing_sales, "platform", "Sales")
 
-# Count occurrences of each emotion by platform & age group
-emotion_summary = (emotionalWellbeingData.groupby(['Platform', 'Age_Group', 'Dominant_Emotion']).size().reset_index(name='Count').sort_values(by=['Platform', 'Age_Group', 'Count'], ascending=[True, True, False]))
+def stack_data(df):
+    return df.set_index("User_ID").stack().reset_index()
 
-#First few rows of the updated 
-print(emotion_summary.head())
+stacked_test = stack_data(test)
 
+def visualize_data(data):
+    #Scatter plot
+    plt.figure(figsize=(8,6))
+    plt.scatter(data["time_spent"], data["engagement_score"], alpha=0.5)
+    plt.title("Time Spent vs Engagement Score")
+    plt.xlabel("Time Spent")
+    plt.ylabel("Engagement Score")
+    plt.grid()
+    plt.show()
 
-"""srisha's work"""
-stacked_data = clean_data.set_index('User_ID').stack().reset_index
-stacked_data.columns = ['User_ID', 'Values', 'Details']
+    # Box plot
+    avg_time = data.groupby("platform")["time_spent"].mean().reset_index()
+    plt.figure(figsize=(8,6))
+    plt.bar(avg_time["platform"], avg_time["time_spent"], color="skyblue")
+    plt.title("Average Time Spent on Social Media")
+    plt.xlabel("Platform")
+    plt.ylabel("Time Spent")
+    plt.show()
 
-stacked_data.head()
+    #Histogram
+    plt.figure(figsize=(8,6))
+    plt.hist(data["time_spent"], bins=20, edgecolor="black", alpha=0.7)
+    plt.title("Distribution of Time Spent")
+    plt.xlabel("Time Spent")
+    plt.ylabel("Frequency")
+    plt.show()
 
-Average Time Spent By A User On Social Media: 
+    # Line Chart
+    platform_trend = data.groupby("date")["time_spent"].mean().reset_index()
+    plt.figure(figsize=(8,6))
+    plt.plot(platform_trend["date"], platform_trend["time_spent"], marker="o")
+    plt.title("Time Spent Over Time")
+    plt.xlabel("Date")
+    plt.ylabel("Average Time Spent")
+    plt.grid()   
+    plt.show()
 
-pivoted_data = data_new.pivot_table(
-    index = 'platform', 
-    values = 'time_spent',
-    aggfunc = 'mean'
-).reset_index()
+    #Boxplot
+    plt.figure(figsize=(8,6))
+    data.boxplot(column = "time_spent", by="platform", grid=False, vert=False)
+    plt.title("Time Spent Distribution by Platform")
+    plt.xlabel("Time Spent")
+    plt.show()
 
-pivoted_data.head()
+#run visualizations
+visualize_data(test)
 
-Marketing Promotion TV vs Radio vs Social Media: 
+if __name__ == "__main__":
+    print("Cleaned Marketing Sales Data:")
+    print(marketing_sales.head())
 
-pivoted_data = marketing_data.pivot_table(
-    index = 'TV',
-    values = 'Sales',
-    aggfunc='mean'
-).reset_index()
+    print("\nFiltered Test Data (Instagram):")
+    print(filtered_test.head())
 
-pivoted_data.head()
+    print("\nSorted Marketing Data (by Sales):")
+    print(sorted_marketing.head())
+
+    print("\nMerged Data:")
+    print(merged_data.head())
+
+    print("\nPivoted Marketing Data:")
+    print(pivoted_sales.head())
+
+    print("\nStacked Test Data:")
+    print(stacked_test.head())
+    
