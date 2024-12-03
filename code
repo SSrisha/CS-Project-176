@@ -79,10 +79,12 @@ def visualize_data(data):
     # Box plot
     avg_time = data.groupby("platform")["time_spent"].mean().reset_index()
     plt.figure(figsize=(8,6))
-    plt.bar(avg_time["platform"], avg_time["time_spent"], color="skyblue")
+    plt.bar(avg_time["platform"], avg_time["time_spent"], marker = "o", linestyle="-", color="purple")
     plt.title("Average Time Spent on Social Media")
     plt.xlabel("Platform")
-    plt.ylabel("Time Spent")
+    plt.ylabel("Average Daily Usage Time (minutes)")
+    plt.grid(alpha=0.5)
+    plt.xticks(rotation=45)
     plt.show()
 
     #Histogram
