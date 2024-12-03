@@ -69,17 +69,17 @@ stacked_test = stack_data(test)
 def visualize_data(data):
     #Scatter plot
     plt.figure(figsize=(8,6))
-    plt.scatter(data["time_spent"], data["engagement_score"], alpha=0.5)
-    plt.title("Time Spent vs Engagement Score")
-    plt.xlabel("Time Spent")
-    plt.ylabel("Engagement Score")
+    plt.scatter(data["Daily_Usage_Time (minutes)"], data["Likes_Received_Per_Day"], alpha=0.5)
+    plt.title("Daily_Usage_Time (minutes) vs Likes Received Per Day")
+    plt.xlabel("Daily_Usage_Time (minutes)")
+    plt.ylabel("Likes_Received_Per_Day")
     plt.grid()
     plt.show()
 
     # Box plot
-    avg_time = data.groupby("platform")["time_spent"].mean().reset_index()
+    avg_time = data.groupby("platform")["Daily_Usage_Time (minutes)"].mean().reset_index()
     plt.figure(figsize=(8,6))
-    plt.bar(avg_time["platform"], avg_time["time_spent"], marker = "o", linestyle="-", color="purple")
+    plt.bar(avg_time["platform"], avg_time["Daily_Usage_Time (minutes)"], marker = "o", linestyle="-", color="purple")
     plt.title("Average Time Spent on Social Media")
     plt.xlabel("Platform")
     plt.ylabel("Average Daily Usage Time (minutes)")
@@ -89,16 +89,16 @@ def visualize_data(data):
 
     #Histogram
     plt.figure(figsize=(8,6))
-    plt.hist(data["time_spent"], bins=20, edgecolor="black", alpha=0.7)
+    plt.hist(data["Daily_Usage_Time (minutes)"], bins=20, edgecolor="black", alpha=0.7)
     plt.title("Distribution of Time Spent")
     plt.xlabel("Time Spent")
     plt.ylabel("Frequency")
     plt.show()
 
     # Line Chart
-    platform_trend = data.groupby("date")["time_spent"].mean().reset_index()
+    platform_trend = data.groupby("date")["Daily_Usage_Time (minutes)"].mean().reset_index()
     plt.figure(figsize=(8,6))
-    plt.plot(platform_trend["date"], platform_trend["time_spent"], marker="o")
+    plt.plot(platform_trend["date"], platform_trend["Daily_Usage_Time (minutes)"], marker="o")
     plt.title("Time Spent Over Time")
     plt.xlabel("Date")
     plt.ylabel("Average Time Spent")
@@ -107,7 +107,7 @@ def visualize_data(data):
 
     #Boxplot
     plt.figure(figsize=(8,6))
-    data.boxplot(column = "time_spent", by="platform", grid=False, vert=False)
+    data.boxplot(column = "Daily_Usage_Time (minutes)", by="platform", grid=False, vert=False)
     plt.title("Time Spent Distribution by Platform")
     plt.xlabel("Time Spent")
     plt.show()
